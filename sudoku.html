@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Sudoku</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script src="jquery.min.js" type="text/javascript"></script>
+    <style>
+        .row {
+            text-align: center;
+        }
+
+        td {
+            width: 1.75rem;
+            height: 1.75rem;
+            border: solid 1px black;
+        }
+
+        .bb {
+            border-bottom-width: 2px !important;
+        }
+
+        .be {
+            border-right-width: 2px !important;
+        }
+
+        #sudokuBoard {
+            border: solid 3px black;
+            line-height: 1.75rem;
+            text-align: center;
+            font-size: 1.5rem;
+            border-collapse: collapse;
+            margin: auto;
+            vertical-align: middle;
+        }
+
+        .bg-yellow {
+            background-color: yellow;
+        }
+
+        .text-red {
+            color: red;
+        }
+
+        button {
+            width: 8rem;
+            height: 2rem;
+            border: solid 1px black;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <br>
+            <table id="sudokuBoard" class="table-bordered m-auto" dir="ltr">
+                <script>
+                    for (r = 1; r <= 9; r++) {
+                        document.write('<tr>');
+                        for (c = 1; c <= 9; c++) {
+                            bb = r % 3 == 0 ? 'bb' : 'bt';
+                            be = c % 3 == 0 ? 'be' : 'bs';
+                            gr = parseInt(r / 3.5);
+                            gc = parseInt(c / 3.5);
+                            cls = '';
+                            if ((r <= 3 && c <= 3) || (r <= 3 && c > 6) || (r > 6 && c <= 3) || (r > 6 && c > 6) || (r > 3 && r <= 6 && c > 3 && c <= 6)) {
+                                cls = 'bg-yellow';
+                            }
+                            document.write('<td contenteditable="true" class="' + bb + ' ' + be + ' ' + cls + '" data-col="col-' + c + '" data-row="row-' + r + '" data-grp="g-' + gr + '-' + gc + '" data-add="a-' + r + '-' + c + '">');
+                            document.write('</td>');
+                        }
+                        document.write('</tr>');
+                    }
+                </script>
+            </table>
+        </div>
+        <br>
+        <div class="row">
+            <button id="solve">Solve</button>
+            <button id="refresh">Refresh</button>
+        </div>
+    </div>
+    <script>
+        $(document).on('click', '#refresh', function() {
+            $('td').removeClass('text-red');
+            $('#sudokuBoard td').text('');
+        });
+        $(document).on('input', '#sudokuBoard td', function() {
+            $(this).removeClass('text-red');
+            let thisCel = $(this);
+            let thisVal = $(this).text();
+            let thisCol = $(this).data('col');
+            let thisRow = $(this).data('row');
+            let thisGrp = $(this).data('grp');
+            let thisAdd = $(this).data('add');
+
+            if (thisVal >= 1 && thisVal <= 9) {
+                $(this).text(parseInt(thisVal));
+            } else {
+                $(this).text('');
+                return false;
+            }
+            $('td').each(function() {
+                var cel = $(this);
+                var val = $(this).text();
+                var col = $(this).data('col');
+                var row = $(this).data('row');
+                var grp = $(this).data('grp');
+                var add = $(this).data('add');
+
+                if (val == thisVal && col == thisCol && add != thisAdd && val != '') {
+                    $(thisCel).text('');
+                    return false;
+                }
+
+                if (val == thisVal && row == thisRow && add != thisAdd && val != '') {
+                    $(thisCel).text('');
+                    return false;
+                }
+
+                if (val == thisVal && grp == thisGrp && add != thisAdd && val != '') {
+                    $(thisCel).text('');
+                    return false;
+                }
+            });
+            $(this).addClass('text-red');
+        });
+
+        _board = [];
+        $(document).on('click', '#solve', function() {
+            $r0 = $('#sudokuBoard').find('tr').eq(0);
+            $r1 = $('#sudokuBoard').find('tr').eq(1);
+            $r2 = $('#sudokuBoard').find('tr').eq(2);
+            $r3 = $('#sudokuBoard').find('tr').eq(3);
+            $r4 = $('#sudokuBoard').find('tr').eq(4);
+            $r5 = $('#sudokuBoard').find('tr').eq(5);
+            $r6 = $('#sudokuBoard').find('tr').eq(6);
+            $r7 = $('#sudokuBoard').find('tr').eq(7);
+            $r8 = $('#sudokuBoard').find('tr').eq(8);
+
+            _board = [
+                [$r0.find('td').eq(0).html(), $r0.find('td').eq(1).html(), $r0.find('td').eq(2).html(), $r0.find('td').eq(3).html(), $r0.find('td').eq(4).html(), $r0.find('td').eq(5).html(), $r0.find('td').eq(6).html(), $r0.find('td').eq(7).html(), $r0.find('td').eq(8).html().toString()],
+                [$r1.find('td').eq(0).html(), $r1.find('td').eq(1).html(), $r1.find('td').eq(2).html(), $r1.find('td').eq(3).html(), $r1.find('td').eq(4).html(), $r1.find('td').eq(5).html(), $r1.find('td').eq(6).html(), $r1.find('td').eq(7).html(), $r1.find('td').eq(8).html().toString()],
+                [$r2.find('td').eq(0).html(), $r2.find('td').eq(1).html(), $r2.find('td').eq(2).html(), $r2.find('td').eq(3).html(), $r2.find('td').eq(4).html(), $r2.find('td').eq(5).html(), $r2.find('td').eq(6).html(), $r2.find('td').eq(7).html(), $r2.find('td').eq(8).html().toString()],
+                [$r3.find('td').eq(0).html(), $r3.find('td').eq(1).html(), $r3.find('td').eq(2).html(), $r3.find('td').eq(3).html(), $r3.find('td').eq(4).html(), $r3.find('td').eq(5).html(), $r3.find('td').eq(6).html(), $r3.find('td').eq(7).html(), $r3.find('td').eq(8).html().toString()],
+                [$r4.find('td').eq(0).html(), $r4.find('td').eq(1).html(), $r4.find('td').eq(2).html(), $r4.find('td').eq(3).html(), $r4.find('td').eq(4).html(), $r4.find('td').eq(5).html(), $r4.find('td').eq(6).html(), $r4.find('td').eq(7).html(), $r4.find('td').eq(8).html().toString()],
+                [$r5.find('td').eq(0).html(), $r5.find('td').eq(1).html(), $r5.find('td').eq(2).html(), $r5.find('td').eq(3).html(), $r5.find('td').eq(4).html(), $r5.find('td').eq(5).html(), $r5.find('td').eq(6).html(), $r5.find('td').eq(7).html(), $r5.find('td').eq(8).html().toString()],
+                [$r6.find('td').eq(0).html(), $r6.find('td').eq(1).html(), $r6.find('td').eq(2).html(), $r6.find('td').eq(3).html(), $r6.find('td').eq(4).html(), $r6.find('td').eq(5).html(), $r6.find('td').eq(6).html(), $r6.find('td').eq(7).html(), $r6.find('td').eq(8).html().toString()],
+                [$r7.find('td').eq(0).html(), $r7.find('td').eq(1).html(), $r7.find('td').eq(2).html(), $r7.find('td').eq(3).html(), $r7.find('td').eq(4).html(), $r7.find('td').eq(5).html(), $r7.find('td').eq(6).html(), $r7.find('td').eq(7).html(), $r7.find('td').eq(8).html().toString()],
+                [$r8.find('td').eq(0).html(), $r8.find('td').eq(1).html(), $r8.find('td').eq(2).html(), $r8.find('td').eq(3).html(), $r8.find('td').eq(4).html(), $r8.find('td').eq(5).html(), $r8.find('td').eq(6).html(), $r8.find('td').eq(7).html(), $r8.find('td').eq(8).html().toString()]
+            ];
+            $(this).attr('disabled', true);
+            solveSudoku(_board);
+            $(this).attr('disabled', false);
+        });
+
+        function checkValidation(board, row, col, k) {
+            for (let i = 0; i < 9; i++) {
+                const m = 3 * Math.floor(row / 3) + Math.floor(i / 3);
+                const n = 3 * Math.floor(col / 3) + i % 3;
+                if (board[row][i] == k || board[i][col] == k || board[m][n] == k) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function solveSudoku(data) {
+            for (let i = 0; i < 9; i++) {
+                for (let j = 0; j < 9; j++) {
+                    if (data[i][j] == '') {
+                        for (let k = 1; k <= 9; k++) {
+                            if (checkValidation(data, i, j, k)) {
+                                data[i][j] = k.toString();
+                                if (solveSudoku(data)) {
+                                    $('#sudokuBoard').find('tr').eq(i).find('td').eq(j).html(k.toString());
+                                    $('#sudokuBoard').find('tr').eq(i).find('td').eq(j).removeClass('text-red');
+                                    return true;
+                                } else {
+                                    $('#sudokuBoard').find('tr').eq(i).find('td').eq(j).html('');
+                                    data[i][j] = '';
+                                }
+                            }
+                        }
+                        return false;
+                    } else {
+                        $('#sudokuBoard').find('tr').eq(i).find('td').eq(j).html(data[i][j].toString());
+                    }
+                }
+            }
+            return true;
+        }
+    </script>
+</body>
+
+</html>
